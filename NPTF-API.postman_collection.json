@@ -1,0 +1,1083 @@
+{
+    "info": {
+        "_postman_id": "nptf-backend-api",
+        "name": "NPTF Backend API",
+        "description": "Complete API collection for Nigeria Police Trust Fund backend with authentication, CRUD operations, and file uploads.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://127.0.0.1:8000/api/v1",
+            "type": "string"
+        },
+        {
+            "key": "token",
+            "value": "",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "Authentication",
+            "item": [
+                {
+                    "name": "Admin Login",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.collectionVariables.set('token', jsonData.token);",
+                                    "    pm.environment.set('token', jsonData.token);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"admin@nptf.gov.ng\",\n    \"password\": \"password123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/admin/login",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "login"
+                            ]
+                        },
+                        "description": "Login as admin and receive authentication token. Token is automatically saved to collection variables."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Authenticated User",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/admin/me",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "me"
+                            ]
+                        },
+                        "description": "Get currently authenticated admin user details."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Admin Logout",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/admin/logout",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "logout"
+                            ]
+                        },
+                        "description": "Logout and invalidate current authentication token."
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "News",
+            "item": [
+                {
+                    "name": "Get All News (Public)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/news?page=1&per_page=10",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "news"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "10"
+                                },
+                                {
+                                    "key": "search",
+                                    "value": "",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "category",
+                                    "value": "",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Get paginated list of news articles. Supports search and category filtering."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Single News (Public)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/news/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "news",
+                                "1"
+                            ]
+                        },
+                        "description": "Get a single news article by ID."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create News (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "title",
+                                    "value": "New Budget Allocation Announced",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "excerpt",
+                                    "value": "The Nigeria Police Trust Fund announces new budget allocation for police welfare.",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "content",
+                                    "value": "Full content of the news article goes here...",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "author",
+                                    "value": "NPTF Admin",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "category",
+                                    "value": "Budget",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "published_at",
+                                    "value": "2026-01-12",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "image",
+                                    "type": "file",
+                                    "src": [],
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/admin/news",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "news"
+                            ]
+                        },
+                        "description": "Create a new news article with optional image upload."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update News (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"title\": \"Updated News Title\",\n    \"content\": \"Updated content\",\n    \"category\": \"Training\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/admin/news/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "news",
+                                "1"
+                            ]
+                        },
+                        "description": "Update an existing news article."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete News (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/admin/news/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "news",
+                                "1"
+                            ]
+                        },
+                        "description": "Delete a news article."
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Contact",
+            "item": [
+                {
+                    "name": "Submit Contact Form (Public)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"phone\": \"+234123456789\",\n    \"subject\": \"Inquiry about Police Welfare\",\n    \"message\": \"I would like to know more about the police welfare programs.\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/contact",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "contact"
+                            ]
+                        },
+                        "description": "Submit a contact form. Sends email to admin and auto-reply to user."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get All Contacts (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/admin/contacts?status=pending",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "contacts"
+                            ],
+                            "query": [
+                                {
+                                    "key": "status",
+                                    "value": "pending"
+                                }
+                            ]
+                        },
+                        "description": "Get all contact form submissions. Filter by status: pending, read, resolved."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Contact Status (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"status\": \"read\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/admin/contacts/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "contacts",
+                                "1"
+                            ]
+                        },
+                        "description": "Update contact submission status. Values: pending, read, resolved."
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Testimonials",
+            "item": [
+                {
+                    "name": "Get Approved Testimonials (Public)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/testimonials",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "testimonials"
+                            ]
+                        },
+                        "description": "Get all approved testimonials."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Submit Testimonial (Public)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"title\": \"Excellent Service\",\n    \"text\": \"The NPTF has done an amazing job improving police welfare.\",\n    \"name\": \"Jane Smith\",\n    \"position\": \"Community Leader\",\n    \"rating\": 5\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/testimonials",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "testimonials"
+                            ]
+                        },
+                        "description": "Submit a testimonial (requires admin approval before appearing publicly)."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get All Testimonials (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/admin/testimonials/all?status=pending",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "testimonials",
+                                "all"
+                            ],
+                            "query": [
+                                {
+                                    "key": "status",
+                                    "value": "pending"
+                                }
+                            ]
+                        },
+                        "description": "Get all testimonials including pending. Filter by status: pending, approved, rejected."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Approve/Update Testimonial (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"status\": \"approved\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/admin/testimonials/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "testimonials",
+                                "1"
+                            ]
+                        },
+                        "description": "Approve, reject, or update a testimonial. Status: pending, approved, rejected."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Testimonial (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/admin/testimonials/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "testimonials",
+                                "1"
+                            ]
+                        },
+                        "description": "Delete a testimonial."
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Projects",
+            "item": [
+                {
+                    "name": "Get All Projects (Public)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/projects?category=&status=",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "projects"
+                            ],
+                            "query": [
+                                {
+                                    "key": "category",
+                                    "value": ""
+                                },
+                                {
+                                    "key": "status",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "Get all projects. Filter by category or status (completed, ongoing, upcoming)."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Single Project (Public)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/projects/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "projects",
+                                "1"
+                            ]
+                        },
+                        "description": "Get a single project by ID."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create Project (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "title",
+                                    "value": "Police Barracks Renovation",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "description",
+                                    "value": "Renovation of police barracks in Lagos State",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "category",
+                                    "value": "Infrastructure",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "status",
+                                    "value": "ongoing",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "location",
+                                    "value": "Lagos State",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "start_date",
+                                    "value": "2026-01-01",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "end_date",
+                                    "value": "2026-12-31",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "impact",
+                                    "value": "500 officers",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "image",
+                                    "type": "file",
+                                    "src": [],
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/admin/projects",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "projects"
+                            ]
+                        },
+                        "description": "Create a new project with optional image."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Project (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"status\": \"completed\",\n    \"end_date\": \"2026-06-30\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/admin/projects/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "projects",
+                                "1"
+                            ]
+                        },
+                        "description": "Update a project. Status: completed, ongoing, upcoming."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Project (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/admin/projects/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "projects",
+                                "1"
+                            ]
+                        },
+                        "description": "Delete a project."
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Gallery",
+            "item": [
+                {
+                    "name": "Get All Gallery Items (Public)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/gallery?event=&type=",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "gallery"
+                            ],
+                            "query": [
+                                {
+                                    "key": "event",
+                                    "value": ""
+                                },
+                                {
+                                    "key": "type",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "Get all gallery items. Filter by event name or type (image, video)."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Single Gallery Item (Public)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/gallery/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "gallery",
+                                "1"
+                            ]
+                        },
+                        "description": "Get a single gallery item by ID."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Event Names (Public)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/gallery/events/list",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "gallery",
+                                "events",
+                                "list"
+                            ]
+                        },
+                        "description": "Get unique list of event names."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Upload Gallery Item (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "event_name",
+                                    "value": "Police Training Graduation 2026",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "title",
+                                    "value": "Graduation Ceremony",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "type",
+                                    "value": "image",
+                                    "type": "text",
+                                    "description": "image or video"
+                                },
+                                {
+                                    "key": "date",
+                                    "value": "2026-01-12",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "media",
+                                    "type": "file",
+                                    "src": []
+                                },
+                                {
+                                    "key": "thumbnail",
+                                    "type": "file",
+                                    "src": [],
+                                    "disabled": true,
+                                    "description": "For videos only"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/admin/gallery",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "gallery"
+                            ]
+                        },
+                        "description": "Upload image or video to gallery. For videos, optionally include thumbnail."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Gallery Item (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/admin/gallery/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "gallery",
+                                "1"
+                            ]
+                        },
+                        "description": "Delete a gallery item."
+                    },
+                    "response": []
+                }
+            ]
+        }
+    ]
+}
